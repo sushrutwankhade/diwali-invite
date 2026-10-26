@@ -302,7 +302,7 @@ END:VCALENDAR`;
   };
 
   // --- REUSABLE COMPONENTS ---
-  const ToastMessage = () => (
+  const renderToastMessage = () => (
     <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] transition-all duration-300 ${toast.show ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
       <div className={`
         px-6 py-4 rounded-full brutal-border brutal-shadow-sm font-black flex items-center gap-3 text-lg uppercase tracking-wide
@@ -314,7 +314,7 @@ END:VCALENDAR`;
     </div>
   );
 
-  const RudeModal = () => {
+  const renderRudeModal = () => {
     if (!showRudeModal) return null;
     return (
       <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-step">
@@ -334,7 +334,7 @@ END:VCALENDAR`;
     );
   };
 
-  const Header = () => (
+  const renderHeader = () => (
     <header className="fixed top-0 left-0 w-full p-4 flex flex-col sm:flex-row justify-between items-center z-50 gap-3 pointer-events-none bg-gradient-to-b from-white/50 to-transparent sm:bg-none">
       <div className="pointer-events-auto flex items-center gap-2 bg-white px-5 py-2 brutal-border rounded-full brutal-shadow-sm font-black text-sm md:text-base uppercase">
         <span className="text-xl">🪔</span> DIWALI SCENE
@@ -361,7 +361,7 @@ END:VCALENDAR`;
   // --- STEPS ---
 
   // STEP 1: LANDING
-  const Step1Landing = () => (
+  const renderStep1Landing = () => (
     <div className="min-h-screen bg-[#E53935] flex flex-col items-center justify-center relative overflow-hidden p-6 text-center">
       <div className="absolute inset-[-100%] sunburst-bg sunburst-spin opacity-40 pointer-events-none"></div>
       
@@ -398,7 +398,7 @@ END:VCALENDAR`;
   );
 
   // STEP 2: REVEAL
-  const Step2Reveal = () => (
+  const renderStep2Reveal = () => (
     <div className="min-h-screen bg-[#2E7D32] flex flex-col items-center justify-start sm:justify-center p-4 sm:p-6 sunburst-bg pt-44 sm:pt-32">
       <div className="w-full max-w-5xl animate-step">
         <div className="flex flex-col lg:flex-row gap-0 bg-[#FDF9F1] brutal-border rounded-3xl overflow-hidden shadow-[12px_12px_0_0_#000]">
@@ -483,7 +483,7 @@ END:VCALENDAR`;
   );
 
   // STEP 3: FIT CHECK
-  const Step3FitCheck = () => (
+  const renderStep3FitCheck = () => (
     <div className="min-h-screen bg-[#FDF9F1] flex flex-col justify-start sm:justify-center p-4 sm:p-6 pb-24 pt-44 sm:pt-32">
       <div className="max-w-6xl mx-auto w-full animate-step">
         <div className="mb-10 md:mb-14">
@@ -660,109 +660,107 @@ END:VCALENDAR`;
   };
 
   // STEP 5: FINAL SCENE (Summary & Live Guest List)
-  const Step5Summary = () => {
-    return (
-      <div className="min-h-screen bg-[#E53935] flex flex-col justify-start items-center p-4 sm:p-6 sunburst-bg relative overflow-hidden pt-44 sm:pt-32 pb-16">
-        <div className="max-w-7xl w-full flex flex-col lg:flex-row gap-12 lg:gap-20 items-center relative z-10 animate-step">
-          
-          {/* Left Summary Area */}
-          <div className="lg:w-1/2 text-center lg:text-left">
-            <h1 className="text-7xl md:text-8xl lg:text-9xl font-black text-yellow-400 uppercase tracking-tighter drop-shadow-[6px_6px_0_rgba(0,0,0,1)] leading-[0.85] mb-8">
-              SCENE SET <br/>
-              <span className="text-white">HAI.</span> <br/>
-              TU BAS <br/>
-              <span className="text-white italic font-serif lowercase">aaja.</span>
-            </h1>
+  const renderStep5Summary = () => (
+    <div className="min-h-screen bg-[#E53935] flex flex-col justify-start items-center p-4 sm:p-6 sunburst-bg relative overflow-hidden pt-44 sm:pt-32 pb-16">
+      <div className="max-w-7xl w-full flex flex-col lg:flex-row gap-12 lg:gap-20 items-center relative z-10 animate-step">
+        
+        {/* Left Summary Area */}
+        <div className="lg:w-1/2 text-center lg:text-left">
+          <h1 className="text-7xl md:text-8xl lg:text-9xl font-black text-yellow-400 uppercase tracking-tighter drop-shadow-[6px_6px_0_rgba(0,0,0,1)] leading-[0.85] mb-8">
+            SCENE SET <br/>
+            <span className="text-white">HAI.</span> <br/>
+            TU BAS <br/>
+            <span className="text-white italic font-serif lowercase">aaja.</span>
+          </h1>
 
-            {/* Crucial Name Input Before RSVP Submission */}
-            <div className="mt-12 bg-white brutal-border p-6 rounded-2xl brutal-shadow text-left">
-              <label className="font-black text-sm uppercase tracking-widest text-black flex items-center gap-2 mb-3">
-                Your Name <span className="text-red-500">*</span>
-              </label>
-              <input 
-                type="text" 
-                placeholder="Enter name for Guest List..."
-                value={guestName}
-                onChange={(e) => setGuestName(e.target.value)}
-                className="w-full bg-[#FDF9F1] border-2 border-black rounded-xl p-4 font-black text-2xl focus:outline-none focus:ring-4 focus:ring-pink-500 transition-all mb-6"
-              />
-              
-              <button 
-                onClick={submitRSVP}
-                disabled={hasRSVPd}
-                className={`w-full brutal-border rounded-xl px-8 py-5 font-black uppercase brutal-shadow flex justify-center items-center gap-3 text-2xl transition-transform active:translate-y-1
-                  ${hasRSVPd ? 'bg-green-500 text-black opacity-90' : 'bg-pink-500 text-white hover:bg-pink-400'}`}
-              >
-                {hasRSVPd ? <><Check size={28} strokeWidth={4}/> YOU ARE ON THE LIST</> : 'FINALIZE RSVP'}
-              </button>
-            </div>
-
-            <div className="flex flex-wrap justify-center lg:justify-start gap-4 mt-8">
-              <button onClick={() => goToStep(4)} className="bg-white text-black brutal-border rounded-xl px-8 py-4 font-black uppercase brutal-shadow flex items-center gap-3 text-lg hover:bg-gray-200">
-                BACK
-              </button>
-              <button onClick={handleAddCalendar} className="bg-yellow-400 text-black brutal-border rounded-xl px-8 py-4 font-black uppercase brutal-shadow flex items-center gap-3 text-lg hover:bg-yellow-300">
-                <Calendar size={24} strokeWidth={3}/> ADD CALENDAR
-              </button>
-            </div>
+          {/* Crucial Name Input Before RSVP Submission */}
+          <div className="mt-12 bg-white brutal-border p-6 rounded-2xl brutal-shadow text-left">
+            <label className="font-black text-sm uppercase tracking-widest text-black flex items-center gap-2 mb-3">
+              Your Name <span className="text-red-500">*</span>
+            </label>
+            <input 
+              type="text" 
+              placeholder="Enter name for Guest List..."
+              value={guestName}
+              onChange={(e) => setGuestName(e.target.value)}
+              className="w-full bg-[#FDF9F1] border-2 border-black rounded-xl p-4 font-black text-2xl focus:outline-none focus:ring-4 focus:ring-pink-500 transition-all mb-6"
+            />
+            
+            <button 
+              onClick={submitRSVP}
+              disabled={hasRSVPd}
+              className={`w-full brutal-border rounded-xl px-8 py-5 font-black uppercase brutal-shadow flex justify-center items-center gap-3 text-2xl transition-transform active:translate-y-1
+                ${hasRSVPd ? 'bg-green-500 text-black opacity-90' : 'bg-pink-500 text-white hover:bg-pink-400'}`}
+            >
+              {hasRSVPd ? <><Check size={28} strokeWidth={4}/> YOU ARE ON THE LIST</> : 'FINALIZE RSVP'}
+            </button>
           </div>
 
-          {/* Right Summary Card */}
-          <div className="lg:w-1/2 w-full">
-            <div className="bg-[#1A1A1A] brutal-border rounded-[2rem] p-8 md:p-12 shadow-[16px_16px_0_0_#000] relative">
-              <div className="text-yellow-400 font-black tracking-widest text-sm mb-12 flex justify-between items-center border-b-4 border-white/20 pb-5">
-                  <span>YOUR SCENE, SUMMARISED</span>
-                  <span className="text-3xl">🎟️</span>
-              </div>
+          <div className="flex flex-wrap justify-center lg:justify-start gap-4 mt-8">
+            <button onClick={() => goToStep(4)} className="bg-white text-black brutal-border rounded-xl px-8 py-4 font-black uppercase brutal-shadow flex items-center gap-3 text-lg hover:bg-gray-200">
+              BACK
+            </button>
+            <button onClick={handleAddCalendar} className="bg-yellow-400 text-black brutal-border rounded-xl px-8 py-4 font-black uppercase brutal-shadow flex items-center gap-3 text-lg hover:bg-yellow-300">
+              <Calendar size={24} strokeWidth={3}/> ADD CALENDAR
+            </button>
+          </div>
+        </div>
 
-              <div className="space-y-8 text-white">
-                 <div className="bg-white/5 p-5 rounded-2xl brutal-border border-white/20">
-                   <span className="text-green-400 font-black text-sm uppercase tracking-widest block mb-3 flex items-center gap-2"><Calendar size={18}/> WHEN</span>
-                   <div className="font-black text-3xl drop-shadow-[2px_2px_0_#000]">Saturday, 31 October 2026<br/>@ 7:00 PM</div>
-                 </div>
-                 
-                 <div className="bg-white/5 p-5 rounded-2xl brutal-border border-white/20">
-                   <span className="text-pink-400 font-black text-sm uppercase tracking-widest block mb-3 flex items-center gap-2"><MapPin size={18}/> WHERE</span>
-                   <div className="font-bold text-2xl leading-tight drop-shadow-[2px_2px_0_#000]">
-                      705 c wing, 33 Keshavkunj Society,<br/>Keshav Nagar, Pune
-                   </div>
-                 </div>
+        {/* Right Summary Card */}
+        <div className="lg:w-1/2 w-full">
+          <div className="bg-[#1A1A1A] brutal-border rounded-[2rem] p-8 md:p-12 shadow-[16px_16px_0_0_#000] relative">
+            <div className="text-yellow-400 font-black tracking-widest text-sm mb-12 flex justify-between items-center border-b-4 border-white/20 pb-5">
+                <span>YOUR SCENE, SUMMARISED</span>
+                <span className="text-3xl">🎟️</span>
+            </div>
 
-                 <div className="bg-white/5 p-5 rounded-2xl brutal-border border-white/20">
-                   <span className="text-yellow-400 font-black text-sm uppercase tracking-widest block mb-3">YOUR FIT</span>
-                   <div className="font-bold text-2xl flex items-center gap-4">
-                      <span className={`w-10 h-10 rounded-full brutal-border border-white shadow-sm ${selectedOutfit.color}`}></span>
-                      <div className="flex flex-col">
-                        <span className="drop-shadow-[2px_2px_0_#000] font-black">{selectedOutfit.name}</span>
-                        <span className="italic font-serif opacity-80 text-base text-gray-300">{selectedOutfit.desc}</span>
-                      </div>
-                   </div>
+            <div className="space-y-8 text-white">
+               <div className="bg-white/5 p-5 rounded-2xl brutal-border border-white/20">
+                 <span className="text-green-400 font-black text-sm uppercase tracking-widest block mb-3 flex items-center gap-2"><Calendar size={18}/> WHEN</span>
+                 <div className="font-black text-3xl drop-shadow-[2px_2px_0_#000]">Saturday, 31 October 2026<br/>@ 7:00 PM</div>
+               </div>
+               
+               <div className="bg-white/5 p-5 rounded-2xl brutal-border border-white/20">
+                 <span className="text-pink-400 font-black text-sm uppercase tracking-widest block mb-3 flex items-center gap-2"><MapPin size={18}/> WHERE</span>
+                 <div className="font-bold text-2xl leading-tight drop-shadow-[2px_2px_0_#000]">
+                    705 c wing, 33 Keshavkunj Society,<br/>Keshav Nagar, Pune
                  </div>
-              </div>
+               </div>
+
+               <div className="bg-white/5 p-5 rounded-2xl brutal-border border-white/20">
+                 <span className="text-yellow-400 font-black text-sm uppercase tracking-widest block mb-3">YOUR FIT</span>
+                 <div className="font-bold text-2xl flex items-center gap-4">
+                    <span className={`w-10 h-10 rounded-full brutal-border border-white shadow-sm ${selectedOutfit.color}`}></span>
+                    <div className="flex flex-col">
+                      <span className="drop-shadow-[2px_2px_0_#000] font-black">{selectedOutfit.name}</span>
+                      <span className="italic font-serif opacity-80 text-base text-gray-300">{selectedOutfit.desc}</span>
+                    </div>
+                 </div>
+               </div>
             </div>
           </div>
         </div>
       </div>
-    );
-  };
+    </div>
+  );
 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: customStyles }} />
       <div className="relative font-sans antialiased text-gray-900 selection:bg-yellow-400 selection:text-black overflow-x-hidden bg-[#E53935]">
-        <ToastMessage />
-        <RudeModal />
+        {renderToastMessage()}
+        {renderRudeModal()}
 
         <div className={`transition-opacity duration-500 ${currentStep > 1 ? 'opacity-100' : 'opacity-0'}`}>
-          <Header />
+          {renderHeader()}
         </div>
         
         <main className={`transition-all duration-300 transform ${isTransitioning ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
-          {currentStep === 1 && <Step1Landing />}
-          {currentStep === 2 && <Step2Reveal />}
-          {currentStep === 3 && <Step3FitCheck />}
+          {currentStep === 1 && renderStep1Landing()}
+          {currentStep === 2 && renderStep2Reveal()}
+          {currentStep === 3 && renderStep3FitCheck()}
           {currentStep === 4 && <Step4PhotoWall />}
-          {currentStep === 5 && <Step5Summary />}
+          {currentStep === 5 && renderStep5Summary()}
         </main>
       </div>
     </>
