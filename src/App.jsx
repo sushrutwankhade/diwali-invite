@@ -160,12 +160,10 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [maxStepReached, setMaxStepReached] = useState(1);
-  const [guestName, setGuestName] = useState('');
   const [selectedOutfit, setSelectedOutfit] = useState(FIT_OPTIONS[1]);
   
   // LIVE FIREBASE STATE
   const [uploadedPhotos, setUploadedPhotos] = useState([]);
-  const [hasRSVPd, setHasRSVPd] = useState(false);
 
   // UI STATE
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -205,22 +203,8 @@ export default function App() {
       console.error("Photos listener error:", err);
     });
 
-    // RSVPs Sync
-    const rsvpsRef = collection(db, 'artifacts', appId, 'public', 'data', 'rsvps');
-    const unsubRsvps = onSnapshot(rsvpsRef, (snapshot) => {
-      let foundOwnRsvp = false;
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        if (data.userId === user.uid) foundOwnRsvp = true;
-      });
-      setHasRSVPd(foundOwnRsvp);
-    }, (err) => {
-      console.error("RSVPs listener error:", err);
-    });
-
     return () => {
       unsubPhotos();
-      unsubRsvps();
     };
   }, [user]);
 
@@ -261,44 +245,6 @@ END:VCALENDAR`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  };
-
-  const handleCopyToClipboard = async (text, successMessage) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      showToast(successMessage, "success");
-    } catch (err) {
-      showToast("Clipboard access denied. Pls copy manually!", "error");
-    }
-  };
-
-  const submitRSVP = async () => {
-    if (!user) {
-      showToast("Connecting to live server... Try again.", "error");
-      return;
-    }
-    if (!guestName.trim()) {
-      showToast("Drop your name before you RSVP!", "error");
-      return;
-    }
-    
-    if (!hasRSVPd) {
-      try {
-        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'rsvps'), {
-          userId: user.uid,
-          name: guestName.trim(),
-          fitName: selectedOutfit.name,
-          fitColor: selectedOutfit.color,
-          timestamp: serverTimestamp()
-        });
-        showToast("RSVP locked in! You're on the live list.", "success");
-      } catch (err) {
-        console.error("Save RSVP error:", err);
-        showToast("Failed to save RSVP to live server.", "error");
-      }
-    } else {
-      showToast("You're already on the guest list!", "info");
-    }
   };
 
   // --- REUSABLE COMPONENTS ---
@@ -371,29 +317,29 @@ END:VCALENDAR`;
             DIL WAALI
           </h1>
           <h1 className="text-7xl md:text-9xl font-black text-yellow-400 italic tracking-tighter drop-shadow-[6px_6px_0_rgba(0,0,0,1)] leading-none mb-6">
-          Diwali
-        </h1>
+            Diwali
+          </h1>
         
-        <div className="mx-auto mb-10 relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center mt-12">
-           <div className="absolute inset-0 bg-yellow-400 brutal-border border-[6px] rounded-full brutal-shadow" style={{ animation: 'spinCrazy 8s infinite linear' }}>
-             <div className="w-full h-full border-[6px] border-dashed border-black rounded-full opacity-40 scale-90"></div>
-           </div>
-           <div className="relative text-[7rem] md:text-[9rem] leading-none z-10 drop-shadow-[6px_6px_0_rgba(0,0,0,1)]" style={{ animation: 'ignitePulse 2s infinite ease-in-out' }}>
+          <div className="mx-auto mb-10 relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center mt-12">
+            <div className="absolute inset-0 bg-yellow-400 brutal-border border-[6px] rounded-full brutal-shadow" style={{ animation: 'spinCrazy 8s infinite linear' }}>
+              <div className="w-full h-full border-[6px] border-dashed border-black rounded-full opacity-40 scale-90"></div>
+            </div>
+            <div className="relative text-[7rem] md:text-[9rem] leading-none z-10 drop-shadow-[6px_6px_0_rgba(0,0,0,1)]" style={{ animation: 'ignitePulse 2s infinite ease-in-out' }}>
               🪔
-           </div>
-        </div>
+            </div>
+          </div>
 
-        <p className="text-white font-bold text-lg md:text-xl max-w-md mx-auto mb-10 brutal-border bg-black/50 p-5 rounded-2xl backdrop-blur-sm shadow-[6px_6px_0_0_#000]">
-          This Diwali, we're skipping the small talk and going straight to the mithai, masti and main character moments.
-        </p>
+          <p className="text-white font-bold text-lg md:text-xl max-w-md mx-auto mb-10 brutal-border bg-black/50 p-5 rounded-2xl backdrop-blur-sm shadow-[6px_6px_0_0_#000]">
+            This Diwali, we're skipping the small talk and going straight to the mithai, masti and main character moments.
+          </p>
 
-        <div>
-          <button onClick={() => goToStep(2)} className="group bg-yellow-400 text-black brutal-border rounded-full px-10 py-5 font-black text-2xl md:text-3xl uppercase tracking-wide brutal-shadow flex items-center gap-3 mx-auto transition-transform active:scale-95">
-            ENTER THE SCENE <ArrowRight className="group-hover:translate-x-2 transition-transform" strokeWidth={5}/>
-          </button>
+          <div>
+            <button onClick={() => goToStep(2)} className="group bg-yellow-400 text-black brutal-border rounded-full px-10 py-5 font-black text-2xl md:text-3xl uppercase tracking-wide brutal-shadow flex items-center gap-3 mx-auto transition-transform active:scale-95">
+              ENTER THE SCENE <ArrowRight className="group-hover:translate-x-2 transition-transform" strokeWidth={5}/>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 
@@ -408,7 +354,7 @@ END:VCALENDAR`;
             <div className="absolute top-6 right-6 text-sm font-black bg-pink-500 text-white px-3 py-1.5 rounded brutal-border rotate-3 shadow-sm">LIMITED PRINT</div>
             
             <div className="mt-14 mb-8 border-4 border-black rounded-t-[100px] overflow-hidden bg-orange-500 aspect-[4/3] flex items-center justify-center brutal-shadow relative">
-               <div className="text-[120px] z-10 animate-pulse drop-shadow-xl">🌼</div>
+              <div className="text-[120px] z-10 animate-pulse drop-shadow-xl">🌼</div>
             </div>
 
             <h2 className="text-6xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9] text-red-600 drop-shadow-[3px_3px_0_#000]">
@@ -419,63 +365,63 @@ END:VCALENDAR`;
           </div>
 
           <div className="p-8 lg:p-10 lg:w-2/5 flex flex-col justify-center bg-[#1A1A1A] text-white relative">
-             <div className="text-yellow-400 font-black tracking-widest text-sm mb-8 flex justify-between items-center border-b-4 border-white/20 pb-4">
-                <span>ADMIT ONE • BEST FIT</span>
-                <span className="text-xl">✨</span>
-             </div>
+            <div className="text-yellow-400 font-black tracking-widest text-sm mb-8 flex justify-between items-center border-b-4 border-white/20 pb-4">
+              <span>ADMIT ONE • BEST FIT</span>
+              <span className="text-xl">✨</span>
+            </div>
 
-             <div className="space-y-6 mb-10">
-               <div className="grid grid-cols-[80px_1fr] border-b-2 border-white/10 pb-3 items-center">
-                 <span className="text-gray-400 font-black text-xs uppercase tracking-wider">Event</span>
-                 <span className="font-black text-lg leading-tight text-white">Diwali at My Place</span>
-               </div>
-               <div className="grid grid-cols-[80px_1fr] border-b-2 border-white/10 pb-3 items-center">
-                 <span className="text-gray-400 font-black text-xs uppercase tracking-wider">Date</span>
-                 <span className="font-black text-2xl text-yellow-400 leading-tight">Sat, 31 October 2026</span>
-               </div>
-               <div className="grid grid-cols-[80px_1fr] border-b-2 border-white/10 pb-3 items-center">
-                 <span className="text-gray-400 font-black text-xs uppercase tracking-wider">Time</span>
-                 <span className="font-black text-lg leading-tight text-white">7:00 PM onwards</span>
-               </div>
-               <div className="grid grid-cols-[80px_1fr] border-b-2 border-white/10 pb-3 items-start">
-                 <span className="text-gray-400 font-black text-xs uppercase tracking-wider pt-1">Venue</span>
-                 <span className="font-bold leading-tight text-white/90">705 c wing, 33 Keshavkunj Society, Keshav Nagar, Pune</span>
-               </div>
-               <div className="grid grid-cols-[80px_1fr] border-b-2 border-white/10 pb-3 items-center">
-                 <span className="text-gray-400 font-black text-xs uppercase tracking-wider">Host</span>
-                 <span className="font-black text-lg leading-tight text-pink-400">MOON BHAU</span>
-               </div>
-             </div>
+            <div className="space-y-6 mb-10">
+              <div className="grid grid-cols-[80px_1fr] border-b-2 border-white/10 pb-3 items-center">
+                <span className="text-gray-400 font-black text-xs uppercase tracking-wider">Event</span>
+                <span className="font-black text-lg leading-tight text-white">Diwali at My Place</span>
+              </div>
+              <div className="grid grid-cols-[80px_1fr] border-b-2 border-white/10 pb-3 items-center">
+                <span className="text-gray-400 font-black text-xs uppercase tracking-wider">Date</span>
+                <span className="font-black text-2xl text-yellow-400 leading-tight">Sat, 31 October 2026</span>
+              </div>
+              <div className="grid grid-cols-[80px_1fr] border-b-2 border-white/10 pb-3 items-center">
+                <span className="text-gray-400 font-black text-xs uppercase tracking-wider">Time</span>
+                <span className="font-black text-lg leading-tight text-white">7:00 PM onwards</span>
+              </div>
+              <div className="grid grid-cols-[80px_1fr] border-b-2 border-white/10 pb-3 items-start">
+                <span className="text-gray-400 font-black text-xs uppercase tracking-wider pt-1">Venue</span>
+                <span className="font-bold leading-tight text-white/90">705 c wing, 33 Keshavkunj Society, Keshav Nagar, Pune</span>
+              </div>
+              <div className="grid grid-cols-[80px_1fr] border-b-2 border-white/10 pb-3 items-center">
+                <span className="text-gray-400 font-black text-xs uppercase tracking-wider">Host</span>
+                <span className="font-black text-lg leading-tight text-pink-400">MOON BHAU</span>
+              </div>
+            </div>
 
-             <div className="flex flex-col gap-4 mt-auto">
-                <button 
-                  onClick={() => setShowRudeModal(true)}
-                  className="w-full bg-gray-800 text-gray-300 brutal-border border-gray-600 rounded-xl py-3 font-black text-lg uppercase hover:bg-red-600 hover:text-white hover:border-black transition-all shadow-[4px_4px_0_0_#000]"
-                >
-                  IS BAAR NAHI
+            <div className="flex flex-col gap-4 mt-auto">
+              <button 
+                onClick={() => setShowRudeModal(true)}
+                className="w-full bg-gray-800 text-gray-300 brutal-border border-gray-600 rounded-xl py-3 font-black text-lg uppercase hover:bg-red-600 hover:text-white hover:border-black transition-all shadow-[4px_4px_0_0_#000]"
+              >
+                IS BAAR NAHI
+              </button>
+              
+              <div className="flex gap-4">
+                <button onClick={handleAddCalendar} className="w-1/2 bg-white text-black brutal-border rounded-xl py-3 font-black uppercase hover:bg-gray-200 transition-colors brutal-shadow-sm flex items-center justify-center gap-2 text-sm sm:text-base">
+                  <Calendar size={18} strokeWidth={3}/> CALENDAR
                 </button>
-                
-                <div className="flex gap-4">
-                  <button onClick={handleAddCalendar} className="w-1/2 bg-white text-black brutal-border rounded-xl py-3 font-black uppercase hover:bg-gray-200 transition-colors brutal-shadow-sm flex items-center justify-center gap-2 text-sm sm:text-base">
-                    <Calendar size={18} strokeWidth={3}/> CALENDAR
-                  </button>
-                  <button 
-                    onClick={() => window.open('https://www.google.com/maps/search/?api=1&query=705+c+wing,+33+Keshavkunj+Society,+Keshav+Nagar,+Pune', '_blank')} 
-                    className="w-1/2 bg-pink-500 text-white brutal-border rounded-xl py-3 font-black uppercase hover:bg-pink-400 transition-colors brutal-shadow-sm flex items-center justify-center gap-2 text-sm sm:text-base"
-                  >
-                    <MapPin size={18} strokeWidth={3}/> MAPS
-                  </button>
-                </div>
+                <button 
+                  onClick={() => window.open('https://www.google.com/maps/search/?api=1&query=705+c+wing,+33+Keshavkunj+Society,+Keshav+Nagar,+Pune', '_blank')} 
+                  className="w-1/2 bg-pink-500 text-white brutal-border rounded-xl py-3 font-black uppercase hover:bg-pink-400 transition-colors brutal-shadow-sm flex items-center justify-center gap-2 text-sm sm:text-base"
+                >
+                  <MapPin size={18} strokeWidth={3}/> MAPS
+                </button>
+              </div>
 
-                <div className="flex gap-4 mt-4">
-                  <button onClick={() => goToStep(1)} className="w-1/3 bg-white text-black brutal-border rounded-xl py-4 font-black text-lg uppercase hover:bg-gray-200 brutal-shadow flex items-center justify-center transition-transform active:translate-y-1">
-                    BACK
-                  </button>
-                  <button onClick={() => goToStep(3)} className="w-2/3 bg-yellow-400 text-black brutal-border rounded-xl py-4 font-black text-xl uppercase hover:bg-yellow-300 brutal-shadow flex items-center justify-center gap-2 transition-transform active:translate-y-1">
-                    NEXT <ArrowRight strokeWidth={4}/>
-                  </button>
-                </div>
-             </div>
+              <div className="flex gap-4 mt-4">
+                <button onClick={() => goToStep(1)} className="w-1/3 bg-white text-black brutal-border rounded-xl py-4 font-black text-lg uppercase hover:bg-gray-200 brutal-shadow flex items-center justify-center transition-transform active:translate-y-1">
+                  BACK
+                </button>
+                <button onClick={() => goToStep(3)} className="w-2/3 bg-yellow-400 text-black brutal-border rounded-xl py-4 font-black text-xl uppercase hover:bg-yellow-300 brutal-shadow flex items-center justify-center gap-2 transition-transform active:translate-y-1">
+                  NEXT <ArrowRight strokeWidth={4}/>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -630,7 +576,7 @@ END:VCALENDAR`;
           ) : (
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
               {uploadedPhotos.map((photo, index) => (
-                <div key={photo.id} className="break-inside-avoid animate-step" style={{animationDelay: `${index * 0.1}s`}}>
+                <div key={photo.id} className="break-inside-avoid animate-step" style={{ animationDelay: `${index * 0.1}s` }}>
                   <div className="bg-white p-4 brutal-border rounded-xl shadow-[8px_8px_0_0_#000] rotate-1 hover:rotate-0 transition-transform">
                     <img src={photo.url} alt={`Live Upload ${index}`} className="w-full h-auto rounded-lg brutal-border object-cover border-2" />
                   </div>
@@ -650,7 +596,7 @@ END:VCALENDAR`;
               onClick={() => goToStep(5)}
               className="bg-green-500 text-black brutal-border rounded-full px-16 py-6 font-black text-3xl uppercase hover:bg-green-400 brutal-shadow inline-flex items-center gap-4 transition-transform active:translate-y-1"
             >
-              NEXT: RSVP <ArrowRight strokeWidth={5} size={32}/>
+              NEXT: SUMMARY <ArrowRight strokeWidth={5} size={32}/>
             </button>
           </div>
 
@@ -659,7 +605,7 @@ END:VCALENDAR`;
     );
   };
 
-  // STEP 5: FINAL SCENE (Summary & Live Guest List)
+  // STEP 5: FINAL SCENE (Summary Details)
   const Step5Summary = () => {
     return (
       <div className="min-h-screen bg-[#E53935] flex flex-col justify-start items-center p-4 sm:p-6 sunburst-bg relative overflow-hidden pt-44 sm:pt-32 pb-16">
@@ -674,34 +620,15 @@ END:VCALENDAR`;
               <span className="text-white italic font-serif lowercase">aaja.</span>
             </h1>
 
-            {/* Crucial Name Input Before RSVP Submission */}
-            <div className="mt-12 bg-white brutal-border p-6 rounded-2xl brutal-shadow text-left">
-              <label className="font-black text-sm uppercase tracking-widest text-black flex items-center gap-2 mb-3">
-                Your Name <span className="text-red-500">*</span>
-              </label>
-              <input 
-                type="text" 
-                placeholder="Enter name for Guest List..."
-                value={guestName}
-                onChange={(e) => setGuestName(e.target.value)}
-                className="w-full bg-[#FDF9F1] border-2 border-black rounded-xl p-4 font-black text-2xl focus:outline-none focus:ring-4 focus:ring-pink-500 transition-all mb-6"
-              />
-              
-              <button 
-                onClick={submitRSVP}
-                disabled={hasRSVPd}
-                className={`w-full brutal-border rounded-xl px-8 py-5 font-black uppercase brutal-shadow flex justify-center items-center gap-3 text-2xl transition-transform active:translate-y-1
-                  ${hasRSVPd ? 'bg-green-500 text-black opacity-90' : 'bg-pink-500 text-white hover:bg-pink-400'}`}
-              >
-                {hasRSVPd ? <><Check size={28} strokeWidth={4}/> YOU ARE ON THE LIST</> : 'FINALIZE RSVP'}
-              </button>
-            </div>
+            <p className="text-white font-bold text-xl max-w-lg mb-8 brutal-border bg-black/40 p-6 rounded-2xl backdrop-blur-sm shadow-[6px_6px_0_0_#000]">
+              Lock the date in your calendar, turn up in your fit, and get ready for good vibes and endless fun!
+            </p>
 
             <div className="flex flex-wrap justify-center lg:justify-start gap-4 mt-8">
-              <button onClick={() => goToStep(4)} className="bg-white text-black brutal-border rounded-xl px-8 py-4 font-black uppercase brutal-shadow flex items-center gap-3 text-lg hover:bg-gray-200">
+              <button onClick={() => goToStep(4)} className="bg-white text-black brutal-border rounded-xl px-8 py-4 font-black uppercase brutal-shadow flex items-center gap-3 text-lg hover:bg-gray-200 transition-transform active:translate-y-1">
                 BACK
               </button>
-              <button onClick={handleAddCalendar} className="bg-yellow-400 text-black brutal-border rounded-xl px-8 py-4 font-black uppercase brutal-shadow flex items-center gap-3 text-lg hover:bg-yellow-300">
+              <button onClick={handleAddCalendar} className="bg-yellow-400 text-black brutal-border rounded-xl px-8 py-4 font-black uppercase brutal-shadow flex items-center gap-3 text-lg hover:bg-yellow-300 transition-transform active:translate-y-1">
                 <Calendar size={24} strokeWidth={3}/> ADD CALENDAR
               </button>
             </div>
@@ -711,33 +638,33 @@ END:VCALENDAR`;
           <div className="lg:w-1/2 w-full">
             <div className="bg-[#1A1A1A] brutal-border rounded-[2rem] p-8 md:p-12 shadow-[16px_16px_0_0_#000] relative">
               <div className="text-yellow-400 font-black tracking-widest text-sm mb-12 flex justify-between items-center border-b-4 border-white/20 pb-5">
-                  <span>YOUR SCENE, SUMMARISED</span>
-                  <span className="text-3xl">🎟️</span>
+                <span>YOUR SCENE, SUMMARISED</span>
+                <span className="text-3xl">🎟️</span>
               </div>
 
               <div className="space-y-8 text-white">
-                 <div className="bg-white/5 p-5 rounded-2xl brutal-border border-white/20">
-                   <span className="text-green-400 font-black text-sm uppercase tracking-widest block mb-3 flex items-center gap-2"><Calendar size={18}/> WHEN</span>
-                   <div className="font-black text-3xl drop-shadow-[2px_2px_0_#000]">Saturday, 31 October 2026<br/>@ 7:00 PM</div>
-                 </div>
-                 
-                 <div className="bg-white/5 p-5 rounded-2xl brutal-border border-white/20">
-                   <span className="text-pink-400 font-black text-sm uppercase tracking-widest block mb-3 flex items-center gap-2"><MapPin size={18}/> WHERE</span>
-                   <div className="font-bold text-2xl leading-tight drop-shadow-[2px_2px_0_#000]">
-                      705 c wing, 33 Keshavkunj Society,<br/>Keshav Nagar, Pune
-                   </div>
-                 </div>
+                <div className="bg-white/5 p-5 rounded-2xl brutal-border border-white/20">
+                  <span className="text-green-400 font-black text-sm uppercase tracking-widest block mb-3 flex items-center gap-2"><Calendar size={18}/> WHEN</span>
+                  <div className="font-black text-3xl drop-shadow-[2px_2px_0_#000]">Saturday, 31 October 2026<br/>@ 7:00 PM</div>
+                </div>
+                
+                <div className="bg-white/5 p-5 rounded-2xl brutal-border border-white/20">
+                  <span className="text-pink-400 font-black text-sm uppercase tracking-widest block mb-3 flex items-center gap-2"><MapPin size={18}/> WHERE</span>
+                  <div className="font-bold text-2xl leading-tight drop-shadow-[2px_2px_0_#000]">
+                    705 c wing, 33 Keshavkunj Society,<br/>Keshav Nagar, Pune
+                  </div>
+                </div>
 
-                 <div className="bg-white/5 p-5 rounded-2xl brutal-border border-white/20">
-                   <span className="text-yellow-400 font-black text-sm uppercase tracking-widest block mb-3">YOUR FIT</span>
-                   <div className="font-bold text-2xl flex items-center gap-4">
-                      <span className={`w-10 h-10 rounded-full brutal-border border-white shadow-sm ${selectedOutfit.color}`}></span>
-                      <div className="flex flex-col">
-                        <span className="drop-shadow-[2px_2px_0_#000] font-black">{selectedOutfit.name}</span>
-                        <span className="italic font-serif opacity-80 text-base text-gray-300">{selectedOutfit.desc}</span>
-                      </div>
-                   </div>
-                 </div>
+                <div className="bg-white/5 p-5 rounded-2xl brutal-border border-white/20">
+                  <span className="text-yellow-400 font-black text-sm uppercase tracking-widest block mb-3">YOUR FIT</span>
+                  <div className="font-bold text-2xl flex items-center gap-4">
+                    <span className={`w-10 h-10 rounded-full brutal-border border-white shadow-sm ${selectedOutfit.color}`}></span>
+                    <div className="flex flex-col">
+                      <span className="drop-shadow-[2px_2px_0_#000] font-black">{selectedOutfit.name}</span>
+                      <span className="italic font-serif opacity-80 text-base text-gray-300">{selectedOutfit.desc}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
